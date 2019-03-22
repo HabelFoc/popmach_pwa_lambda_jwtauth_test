@@ -31,14 +31,10 @@ module.exports.auth = async (event) => {
       try {
         const decoded = jwt.verify(token, secretKey);
 
-        const email = decoded.data.user.email;
-
-
-
         return {
           statusCode: 200,
           body: JSON.stringify({
-            message: 'Lambda Trigger Successfully. User SignIn.',
+            message: 'Lambda Trigger Successfully. User Verified.',
             data: decoded,
             authenticated: true
           }),
@@ -72,44 +68,44 @@ module.exports.auth = async (event) => {
   // sign/signup
   if (event.httpMethod === "POST" && event.path === "/signin") {
 
-    const { username, email } = JSON.parse(event.body);
-
     // check user on databse
     try {
-      const document = await User.find({ email: email });
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          message: 'Lambda Trigger Successfully. User SignIn.',
-          data: document,
-          authenticated: true
-        }),
-      };
-    } catch (err) {
-      // signin new user
-      try {
-        const token = await jwt.sign({ user: { username, email } }, secretKey)
+      const document = await User.find({ email: JSON.parse(event.body).email });
+
+      if (document.length > 0) {
+        let { username, email, token } = document[0];
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            message: 'Lambda Trigger Successfully. User Exist, Signing User In.',
+            data: { username, email, token },
+            authenticated: true
+          }),
+        };
+      } else {
+        const { username, email } = JSON.parse(event.body)
+        let token = await jwt.sign({ user: { username, email } }, secretKey)
 
         await User({ username, email, token, date_created: Date.now() }).save();
 
         return {
           statusCode: 200,
           body: JSON.stringify({
-            message: 'Lambda Trigger Successfully. Sign New User Success.',
+            message: 'Lambda Trigger Successfully. New User Created.',
             data: { username, email, token },
             authenticated: true
           }),
         };
-
-      } catch (err) {
-        return {
-          statusCode: 200,
-          body: JSON.stringify({
-            message: `An error occurred. Error: ${err}`,
-            authenticated: false
-          }),
-        };
       }
+    } catch (err) {
+      // signin new user
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: `An error occurred. Error: ${err}`,
+          authenticated: false
+        }),
+      };
     }
 
 
