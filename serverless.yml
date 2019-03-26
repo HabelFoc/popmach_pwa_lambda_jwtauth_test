@@ -1,6 +1,6 @@
 
 
-service: popmach-auth-lambda
+service: popmach-pwa-auth-lambda
 
 provider:
   name: aws
@@ -9,9 +9,6 @@ provider:
 # you can overwrite defaults here
 stage: dev
 region: ${opt:region, self:provider.region}
-environment:
-    JWT_SECRET: ${file(./keys.json):JWT_SECRET}
-    MONGOURI: ${file(./keys.json):MONGOURI}
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
