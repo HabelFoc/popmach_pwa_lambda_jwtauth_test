@@ -16,7 +16,7 @@ const UserScheme = new Schema({
 
 const User = mongoose.model('users', UserScheme);
 
-const secretKey = 'thesecretkey098123poiqwemnbzxc';
+const secretKey = process.env.JWT_SECRET;
 
 module.exports.auth = async (event) => {
 
@@ -24,12 +24,12 @@ module.exports.auth = async (event) => {
   // authentication
   if (event.httpMethod === "POST" && event.path === "/auth") {
 
-    if (event.headers.Authorization.split(" ")[1]) {
+    const headerToken = event.headers.Authorization.split(" ")[1];
 
-      const token = event.headers.Authorization.split(" ")[1];
+    if (headerToken !== "") {
 
       try {
-        const decoded = jwt.verify(token, secretKey);
+        const decoded = jwt.verify(headerToken, secretKey);
 
         return {
           statusCode: 200,
@@ -46,6 +46,7 @@ module.exports.auth = async (event) => {
           statusCode: 200,
           body: JSON.stringify({
             message: 'UnAuthorized. Authorization failed.',
+            err: err,
             authenticated: false
           }),
         };
