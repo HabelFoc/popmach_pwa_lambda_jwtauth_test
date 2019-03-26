@@ -3,7 +3,7 @@
 const jwt = require("jsonwebtoken");
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://habelfoc:test123@ds221416.mlab.com:21416/popmach-users-dev', { useNewUrlParser: true }).then(() => console.log('mongo connected!')).catch(err => console.log(err));
+mongoose.connect(process.env.MONGOURI, { useNewUrlParser: true }).then(() => console.log('mongo connected!')).catch(err => console.log(err));
 
 const Schema = mongoose.Schema;
 
