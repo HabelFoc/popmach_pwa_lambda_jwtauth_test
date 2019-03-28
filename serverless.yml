@@ -1,6 +1,6 @@
 
 
-service: popmach-pwa-auth-lambda
+service: popmach-pwa-auth-lambda-trigger
 
 provider:
   name: aws

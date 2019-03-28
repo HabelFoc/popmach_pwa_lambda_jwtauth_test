@@ -16,7 +16,7 @@ const UserScheme = new Schema({
 
 const User = mongoose.model('users', UserScheme);
 
-const secretKey = process.env.JWT_SECRET;
+const secretKey = process.env.JWTSECRET;
 
 module.exports.auth = async (event) => {
 
@@ -73,7 +73,7 @@ module.exports.auth = async (event) => {
     try {
       const document = await User.find({ email: JSON.parse(event.body).email });
 
-      if (document.length > 0) {
+      if (document[0]) {
         let { username, email, token } = document[0];
         return {
           statusCode: 200,
