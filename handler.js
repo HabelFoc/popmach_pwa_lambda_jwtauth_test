@@ -73,7 +73,7 @@ module.exports.auth = async (event) => {
     try {
       const document = await User.find({ email: JSON.parse(event.body).email });
 
-      if (document[0]) {
+      if (document[0] !== undefined) {
         let { username, email, token } = document[0];
         return {
           statusCode: 200,
